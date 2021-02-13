@@ -1,0 +1,172 @@
+#include <iostream>
+#include <fstream>
+#include <iomanip>
+
+class Book
+{
+private:
+	char name[50];
+	int book_num;
+
+public:
+	void addBook()
+	{
+		std::cout << "The Name of The Book : ";
+		std::cin.ignore();
+		std::cin.getline(name, 50);
+		std::cout << "Book Number : ";
+		std::cin >> book_num;
+	}
+	void modify()
+	{
+		std::cout << "Book No. : " << book_num << std::endl;
+		std::cout << "Modify Book Name : ";
+		std::cin.ignore();
+		std::cin.getline(name, 50);
+	}
+	void showBook() const
+	{
+		std::cout << std::setw(3) << book_num << std::setw(18) << name << std::endl;
+	}
+	int getBooknum() const
+	{
+		return book_num;
+	}
+};
+
+void writeBook()
+{
+	Book book;
+	std::ofstream outFile;
+	outFile.open("Book.dat", std::ios::binary | std::ios::app);
+	book.addBook();
+	outFile.write(reinterpret_cast<char*>(&book), sizeof(Book));
+	outFile.close();
+}
+
+void modifyBook(int n)
+{
+	bool found = false;
+	Book book;
+	std::fstream File;
+	File.open("Book.dat", std::ios::binary | std::ios::in | std::ios::out);
+	if (!File)
+	{
+		std::cout << "File could not be open..." << std::endl;
+	}
+	while (!File.eof() && found == false)
+	{
+		File.read(reinterpret_cast<char*>(&book), sizeof(Book));
+		if (book.getBooknum() == n)
+		{
+			std::cout << "=============================" << std::endl;
+			std::cout << "Book No.      Book Name" << std::endl;
+			std::cout << "=============================" << std::endl;
+			book.showBook();
+			std::cout << "The New Name of the book" << std::endl;
+			book.modify();
+			int pos = (-1) * static_cast<int>(sizeof(Book));
+			File.seekp(pos, std::ios::cur);
+			File.write(reinterpret_cast<char*>(&book), sizeof(Book));
+			std::cout << "Record Updated";
+			found = true;
+		}
+	}
+	File.close();
+	if (found == false)
+		std::cout << "Record Not Found";
+}
+
+void showAll()
+{
+	Book book;
+	std::ifstream inFile;
+	inFile.open("Book.dat", std::ios::binary);
+	if (!inFile)
+	{
+		std::cout << "File could not be open...";
+		return;
+	}
+	std::cout << "\tBOOK LIST" << std::endl;
+	std::cout << "====================================" << std::endl;
+	std::cout << "Book No.          Book Name" << std::endl;
+	std::cout << "====================================" << std::endl;
+	while (inFile.read(reinterpret_cast<char*>(&book), sizeof(Book)))
+	{
+		book.showBook();
+	}
+	inFile.close();
+}
+
+void delete_book(int n)
+{
+	Book book;
+	std::ifstream inFile;
+	std::ofstream outFile;
+	inFile.open("Book.dat", std::ios::binary);
+	if (!inFile)
+	{
+		std::cout << "File could not be open...";
+		return;
+	}
+	outFile.open("Temp.dat", std::ios::binary);
+	inFile.seekg(0, std::ios::beg);
+	while (inFile.read(reinterpret_cast<char*>(&book), sizeof(Book)))
+	{
+		if (book.getBooknum() != n)
+		{
+			outFile.write(reinterpret_cast<char*> (&book), sizeof(Book));
+		}
+	}
+	inFile.close();
+	outFile.close();
+	remove("Book.dat");
+	rename("Temp.dat", "Book.dat");
+	std::cout << "\tRecord Deleted...";
+}
+
+int main()
+{
+	char ch;
+	int num;	
+
+	do
+	{
+		system("cls");
+		std::cout << "\tKIM'S BOOKSHOP" << std::endl;
+		std::cout << "====================================" << std::endl;
+		std::cout << "\t01. ADD BOOK" << std::endl;
+		std::cout << "\t02. MODIFY BOOK" << std::endl;
+		std::cout << "\t03. SHOW ALL BOOK LIST" << std::endl;
+		std::cout << "\t04. DELETE BOOK" << std::endl;
+		std::cout << "\t05. EXIT" << std::endl;
+		std::cout << "\tCHOOSE OPTION (1-5) : ";
+		std::cin >> ch;
+
+		switch (ch)
+		{
+		case '1':
+			writeBook();
+			break;
+		case '2':
+			std::cout << "No. of the book to modify : ";
+			std::cin >> num;
+			modifyBook(num);			
+			break;
+		case '3':
+			showAll();
+			break;
+		case '4':
+			std::cout << "No. of the book to delete : ";
+			std::cin >> num;
+			delete_book(num);
+			break;
+		default:
+			break;
+		}
+
+
+	} while (ch != '5');
+
+	return 0;
+}
