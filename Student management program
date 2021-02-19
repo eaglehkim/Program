@@ -1,0 +1,189 @@
+#include <iostream>
+
+#define NAME_SIZE    32
+#define ADDRESS_SIZE 128
+#define STUDENT_MAX  10
+#define PHONE_SIZE   14
+
+struct Student
+{
+	char  strName[NAME_SIZE];
+	char  strAdrs[ADDRESS_SIZE];
+	char  strPhoneNum[PHONE_SIZE];
+	int	  iNum;
+	int   iKor;
+	int   iEng;
+	int   iMath;
+	int   iSum;
+	float fAvg;
+};
+
+enum MENU
+{
+	MENU_NONE,
+	MENU_INSERT,
+	MENU_DELETE,
+	MENU_SEARCH,
+	MENU_OUTPUT,
+	MENU_EXIT
+};
+
+int main()
+{
+	Student stuArr[STUDENT_MAX] = {};
+	int iStuCnt = 0;
+	int iStuNum = 1;
+
+	char strName[NAME_SIZE] = {};
+
+	while (true)
+	{
+		system("cls");
+
+		std::cout << "==================================" << std::endl;
+		std::cout << " WELCOM TO THE STUDENT MANAGEMENT" << std::endl;
+		std::cout << "==================================" << std::endl;
+		std::cout << "\t01.ENROLL" << std::endl;
+		std::cout << "\t02.DELETE" << std::endl;
+		std::cout << "\t03.SEARCH" << std::endl;
+		std::cout << "\t04.SHOW ALL" << std::endl;
+		std::cout << "\t05.EXIT" << std::endl;
+		std::cout << "   SELECT AN OPTION : ";
+
+		int iMenu;
+		std::cin >> iMenu;
+
+		// error check
+		if (std::cin.fail()) // when failed, returns 1
+		{
+			std::cin.clear();
+			std::cin.ignore(1024, '\n');
+			continue;
+		}
+
+		if (iMenu == MENU_EXIT)
+			break;
+
+		switch (iMenu)
+		{
+		case MENU_INSERT:
+			system("cls");
+			std::cout << "========= ADD A STUDENT ========" << std::endl;
+
+			if (iStuCnt == STUDENT_MAX)
+				break;
+
+			std::cout << "\tNAME : ";
+			std::cin >> stuArr[iStuCnt].strName;
+
+			std::cin.ignore(1024, '\n');
+
+			std::cout << "\tADDRESS : ";
+			std::cin.getline(stuArr[iStuCnt].strAdrs, ADDRESS_SIZE);
+
+			std::cout << "\tPHONE NUMBER : ";
+			std::cin.getline(stuArr[iStuCnt].strPhoneNum, PHONE_SIZE);
+
+			std::cout << "\tKOREAN LANGUAGE SCORE : ";
+			std::cin >> stuArr[iStuCnt].iKor;
+
+			std::cout << "\tENGLISH SCORE : ";
+			std::cin >> stuArr[iStuCnt].iEng;
+
+			std::cout << "\tMATHEMATICS SCORE : ";
+			std::cin >> stuArr[iStuCnt].iMath;
+
+			stuArr[iStuCnt].iSum =
+				stuArr[iStuCnt].iKor +
+				stuArr[iStuCnt].iEng +
+				stuArr[iStuCnt].iMath;
+
+			stuArr[iStuCnt].fAvg = stuArr[iStuCnt].iSum / 3.f;
+
+			stuArr[iStuCnt].iNum = iStuNum;
+			++iStuNum;
+			++iStuCnt; 
+
+			std::cout << "    --ENROLLMENT COMPLETED--" << std::endl;
+			break;
+		case MENU_DELETE:
+			system("cls");
+
+			std::cout << "========= DELETE A STUDENT ========" << std::endl;
+
+			std::cin.ignore(1024, '\n');
+			std::cout << "\tNAME TO DELETE : ";
+			std::cin.getline(strName, NAME_SIZE);
+
+			for (int i = 0; i < iStuCnt; ++i)
+			{
+				if (!strcmp(stuArr[i].strName, strName))
+				{
+					for (int j = i; j < iStuCnt - 1; ++j)
+					{
+						stuArr[i] = stuArr[i + 1];
+					}
+
+					--iStuCnt;
+
+					std::cout << "    --DELETION COMPLETED--" << std::endl;
+					break;
+				}
+			}
+
+			break;
+		case MENU_SEARCH:
+			system("cls");
+
+			std::cout << "========= SEARCH A STUDENT ========" << std::endl;
+
+			std::cin.ignore(1024, '\n');
+			std::cout << "\tNAME TO SEARCH : ";
+			std::cin.getline(strName, NAME_SIZE);
+
+			for (int i = 0; i < iStuCnt; ++i)
+			{
+				if (!strcmp(stuArr[i].strName, strName))
+				{
+					std::cout << "\tNAME           : " << stuArr[i].strName << std::endl;
+					std::cout << "\tPHONE NUMBER   : " << stuArr[i].strPhoneNum << std::endl;
+					std::cout << "\tADDRESS        : " << stuArr[i].strAdrs << std::endl;
+					std::cout << "\tSTUDENT NUMBER : " << stuArr[i].iNum << std::endl;
+					std::cout << "\tKOREAN LANGUAGE SCORE : " << stuArr[i].iKor << std::endl;
+					std::cout << "\tENGLISH SCORE         : " << stuArr[i].iEng << std::endl;
+					std::cout << "\tMATHEMATICS SCORE     : " << stuArr[i].iMath << std::endl;
+					std::cout << "\tTOTAL SCORE           : " << stuArr[i].iSum << std::endl;
+					std::cout << "\tAVERAGE SCORE         : " << stuArr[i].fAvg << std::endl << std::endl;
+					break;
+				}
+			}
+
+			break;
+		case MENU_OUTPUT:
+			system("cls");
+
+			std::cout << "========= SHOW ALL STUDENT ========" << std::endl;
+			
+			for (int i = 0; i < iStuCnt; ++i)
+			{
+				std::cout << "\tNAME           : " << stuArr[i].strName << std::endl;
+				std::cout << "\tPHONE NUMBER   : " << stuArr[i].strPhoneNum << std::endl;
+				std::cout << "\tADDRESS        : " << stuArr[i].strAdrs << std::endl;
+				std::cout << "\tSTUDENT NUMBER : " << stuArr[i].iNum << std::endl;
+				std::cout << "\tKOREAN LANGUAGE SCORE : " << stuArr[i].iKor << std::endl;
+				std::cout << "\tENGLISH SCORE         : " << stuArr[i].iEng << std::endl;
+				std::cout << "\tMATHEMATICS SCORE     : " << stuArr[i].iMath << std::endl;
+				std::cout << "\tTOTAL SCORE           : " << stuArr[i].iSum << std::endl;
+				std::cout << "\tAVERAGE SCORE         : " << stuArr[i].fAvg << std::endl << std::endl;
+			}
+			break;
+		default:
+			std::cout << "    --WRONG INPUT--" << std::endl;
+			break;
+		}
+
+		system("pause");
+	}
+
+	return 0;
+}
